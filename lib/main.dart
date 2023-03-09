@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import './question.dart';
+
 // may also be written as: void main() => runApp(MyApp());
 void main() {
   runApp(MyApp());
@@ -13,24 +15,25 @@ class MyApp extends StatefulWidget {
   // is called. In this case in creates a State object in the widget tree at the location
   // of MyAppState which returns the State of the associated MyApp class.
   State<StatefulWidget> createState() {
-    return MyAppState();
+    return _MyAppState();
   }
 }
 
 // Persistent. MyAppState is named by convention but can be named anything.
 // therefore we must indicate the class that this class holds the State for.
-class MyAppState extends State<MyApp> {
+// The leading underscore converts the class to a Private class.
+class _MyAppState extends State<MyApp> {
   // class-wide variables are called properties
-  var questionIndex = 0;
+  var _questionIndex = 0;
 
-  void answerQuestions() {
+  void _answerQuestions() {
     // setState forces the app to re-render the UI by calling the build method of the
     // widget where it is called. However, Flutter will not re-render the entire UI
     // but will only re-render what has changed.
     setState(() {
-      questionIndex++;
+      _questionIndex++;
     });
-    print(questionIndex);
+    print(_questionIndex);
   }
 
   // decorator - clarifies that we are deliberately overriding the build method
@@ -53,7 +56,7 @@ class MyAppState extends State<MyApp> {
         // in this case it takes a list of Widgets. Type inference would have identified
         // this as a list of a Widgets, but this explicitly declares the data type.
         body: Column(children: <Widget>[
-          Text(questions[questionIndex]),
+          Question(questions[_questionIndex]),
           ElevatedButton(
             child: Text('Answer 1'),
             // onPressed takes a function. However, if you were to write answerQuestion() instead,
@@ -63,15 +66,15 @@ class MyAppState extends State<MyApp> {
             // function which in this case would be null since answerQuestion returns nothing or 'void'.
             // answerQuestion() - return value of the function
             // answerQuestion - pointer to the function itself
-            onPressed: answerQuestions,
+            onPressed: _answerQuestions,
           ),
           ElevatedButton(
             child: Text('Answer 2'),
-            onPressed: answerQuestions,
+            onPressed: _answerQuestions,
           ),
           ElevatedButton(
             child: Text('Answer 3'),
-            onPressed: answerQuestions,
+            onPressed: _answerQuestions,
           ),
         ]),
       ),
