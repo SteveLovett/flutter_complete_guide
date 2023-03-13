@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import './question.dart';
+import 'quiz.dart';
+import 'result.dart';
 
 // may also be written as: void main() => runApp(MyApp());
 void main() {
@@ -23,17 +24,57 @@ class MyApp extends StatefulWidget {
 // therefore we must indicate the class that this class holds the State for.
 // The leading underscore converts the class to a Private class.
 class _MyAppState extends State<MyApp> {
+  final _questions = const [
+    {
+      'questionText': 'What\'s your favorite color?',
+      'answers': [
+        {'text': 'Black', 'score': 10},
+        {'text': 'Red', 'score': 6},
+        {'text': 'Green', 'score': 3},
+        {'text': 'White', 'score': 1}
+      ]
+    },
+    {
+      'questionText': 'What\'s your favorite animal?',
+      'answers': [
+        {'text': 'Rabbit', 'score': 1},
+        {'text': 'Snake', 'score': 10},
+        {'text': 'Elephant', 'score': 3},
+        {'text': 'Lion', 'score': 6}
+      ]
+    },
+    {
+      'questionText': 'Who\'s your favorite instructor?',
+      'answers': [
+        {'text': 'Max', 'score': 1},
+        {'text': 'Max', 'score': 1},
+        {'text': 'Max', 'score': 1},
+        {'text': 'Max', 'score': 1}
+      ]
+    }
+  ];
   // class-wide variables are called properties
   var _questionIndex = 0;
+  var _totalScore = 0;
 
-  void _answerQuestions() {
+  void _resetQuiz() {
+    setState(() {
+      _questionIndex = 0;
+      _totalScore = 0;
+    });
+  }
+
+  void _answerQuestion(int score) {
+    _totalScore += score;
     // setState forces the app to re-render the UI by calling the build method of the
     // widget where it is called. However, Flutter will not re-render the entire UI
     // but will only re-render what has changed.
     setState(() {
       _questionIndex++;
     });
-    print(_questionIndex);
+    if (_questionIndex < _questions.length) {
+      print(_questionIndex);
+    }
   }
 
   // decorator - clarifies that we are deliberately overriding the build method
@@ -42,10 +83,6 @@ class _MyAppState extends State<MyApp> {
   // calls the build function that tells Flutter what/when to render on the screen
   // Note: all widgets are classes
   Widget build(BuildContext context) {
-    var questions = [
-      'What\'s your favorite color?',
-      'What\'s your favorite animal?'
-    ];
     return MaterialApp(
       // home is a named argument of the MaterialApp Widget
       home: Scaffold(
@@ -55,28 +92,13 @@ class _MyAppState extends State<MyApp> {
         // Column accepts a named argument children which can take a list of items
         // in this case it takes a list of Widgets. Type inference would have identified
         // this as a list of a Widgets, but this explicitly declares the data type.
-        body: Column(children: <Widget>[
-          Question(questions[_questionIndex]),
-          ElevatedButton(
-            child: Text('Answer 1'),
-            // onPressed takes a function. However, if you were to write answerQuestion() instead,
-            // dart would call the function immediately while parsing the file and NOT when the user
-            // presses the button. We want this function to run when the user presses the button so we
-            // instead add answerQuestion as a reference to the function and not the return value of the
-            // function which in this case would be null since answerQuestion returns nothing or 'void'.
-            // answerQuestion() - return value of the function
-            // answerQuestion - pointer to the function itself
-            onPressed: _answerQuestions,
-          ),
-          ElevatedButton(
-            child: Text('Answer 2'),
-            onPressed: _answerQuestions,
-          ),
-          ElevatedButton(
-            child: Text('Answer 3'),
-            onPressed: _answerQuestions,
-          ),
-        ]),
+        body: _questionIndex < _questions.length
+            ? Quiz(
+                answerQuestion: _answerQuestion,
+                questions: _questions,
+                questionIndex: _questionIndex,
+              )
+            : Result(_totalScore, _resetQuiz),
       ),
     );
   }
